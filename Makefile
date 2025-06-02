@@ -3,6 +3,7 @@ SEMINAR := Seminar
 .PHONY: seminar
 
 seminar:
+	@mkdir -p $(SEMINAR)/$(shell date -u +%Y-%m-%d)
 	@cp -r $(SEMINAR)/template/* $(SEMINAR)/$(shell date -u +%Y-%m-%d)
 
 
