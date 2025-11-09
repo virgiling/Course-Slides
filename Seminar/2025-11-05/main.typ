@@ -416,9 +416,9 @@ _PaInLeSS_ (#strong[PA]rallel #strong[IN]stantiab#strong[LE] #strong[S]at #stron
       + *else*
         + #line-label(<drop>)*for* bucket *in* $frak(B)[| l > |"lemma"| |]$ *do*
           + $c^* arrow.l argmax_(l, "lbd") c, c in "bucket"$
-      + $frak(B) arrow.l frak(B) - {c^*}$
-      + budget $arrow.l$ budget + $|c^*|$
-      + *goto* @insert
+        + $frak(B) arrow.l frak(B) - {c^*}$
+        + budget $arrow.l$ budget + $|c^*|$
+        + *goto* @insert
     ],
   )
 ]
