@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.2.2"
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
-#import "@preview/curryst:0.3.0": rule, proof-tree
+#import "@preview/fletcher:0.5.1" as fletcher: edge, node
+#import "@preview/curryst:0.3.0": proof-tree, rule
 #import "@preview/touying-buaa:0.2.0": *
 #import "@preview/i-figured:0.2.4"
 #import "@preview/pinit:0.2.2": *
@@ -82,7 +82,12 @@
     author: [凌典],
     date: datetime.today(),
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white))
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 
@@ -92,13 +97,13 @@
 
 
 #tblock(title: "基数约束定义")[
-考虑变量集合 $cal(X) = {x_1, x_2, dots, x_n}$, 我们将如下形式的约束称为基数约束:
+  考虑变量集合 $cal(X) = {x_1, x_2, dots, x_n}$, 我们将如下形式的约束称为基数约束:
 
-$
-  x_1 + x_2 + dots + x_n sharp K
-$
+  $
+    x_1 + x_2 + dots + x_n sharp K
+  $
 
-其中 $sharp in {gt.eq, lt.eq, eq}, x_i in {0, 1}, K in bb(N)$
+  其中 $sharp in {gt.eq, lt.eq, eq}, x_i in {0, 1}, K in bb(N)$
 ]
 
 值得注意的是，我们可以通过 $x_i + overline(x)_i = 1$ 将 $gt.eq, lt.eq$ 相互转化，而 $eq$ 可以通过 $gt.eq, lt.eq$ 进行夹逼。
@@ -128,12 +133,12 @@ $
 ][
   #only(1)[
     当且仅当前 $i$ 个数据文字*至少*有 $j$ 个为真时，$y_(i, j)$ 为真
-  
+
     于是，$y_(n, j)$ 就表示该基数约束中至少有 $j$ 个文字为真，换而言之，如存在约束 $x_1+ x_2 + dots + x_n gt.eq K$，那么只需要保证 $y_(n, K)$ 为真即可。
   ]
   #only(2)[
     考虑上文的约束 $x_1 + x_2 + x_3 + overline(x_4) lt.eq 2$，在这种情况下，必然不能有 $K + 1$ 或更多的文字为真
-    
+
     于是我们只需要约束 $y_(4, 3) = o_3$ 为假即可
   ]
   #only(3)[
@@ -156,7 +161,7 @@ $
     *$y_(i, j)$ 从左到右承载的信息量呈递增*
 
     例如 $y_(2, 1), y_(2, 2)$ 中有任一为真，我们都可以推断出 $x_1, x_2$ 的赋值信息
-    
+
     然而我们找不到任何一个 $y_(i,j)$ 能够只辅助推理 $x_3, overline(x)_4$ 的赋值
 
   ]
@@ -180,7 +185,7 @@ $
   ]
   #only(3)[
     我们可以发现，*这种编码方式是对称的*
-    
+
     因为我们可以通过辅助变量 $r_1, r_2$ 来推理出 $x_3, overline(x)_4$ 的赋值信息
   ]
   #only(4)[
@@ -195,7 +200,7 @@ $
 我们考虑一个常用的编码 Cardinality Network
 
 #tblock(title: "Cardinality Network")[
- 此电路通过 $k$ 个 2-comparators 来构建的，一个比较算子的电路结构为 $"2-comp"(x_1, x_2, y_1, y_2)$，其中，$x_1, x_2$ 为输入，$y_1, y_2$ 为输出，满足以下约束：
+  此电路通过 $k$ 个 2-comparators 来构建的，一个比较算子的电路结构为 $"2-comp"(x_1, x_2, y_1, y_2)$，其中，$x_1, x_2$ 为输入，$y_1, y_2$ 为输出，满足以下约束：
   $
     y_1 = x_1 or x_2\
     y_2 = x_1 and x_2
@@ -236,10 +241,10 @@ $
 
 #grid(columns: 2, column-gutter: 1em)[
   #image("fig/card.png", width: 80%)
-    这里，我们只需要加入单元子句 $overline(o)_3$ 即可
+  这里，我们只需要加入单元子句 $overline(o)_3$ 即可
 ][
   可以发现，这种网络结构虽然是对称的，*但其本质上也是排序敏感的*
-  
+
   因为每次其通过门时，都是按照两两分组来实现的，那么分组的顺序或许就会显得十分重要。
 ]
 
@@ -257,7 +262,7 @@ $
 
 $
   (x_1 or x_2) and (not x_1 or x_2) and (not x_2 or x_3 or x_4) and (not x_4 or x_5)\
-  x_1 + x_2 + x_3 + not x_4 lt.eq 2 
+  x_1 + x_2 + x_3 + not x_4 lt.eq 2
 $
 
 #pagebreak()
@@ -269,7 +274,7 @@ $
 
 #pause `Random` 的方法通过一个随机排列来对变量进行排序，纯粹的碰运气方法
 
-#pause `Occur` 通过统计变量在子句中出现的次数（正负文字都统计），根据出现次数的递减顺序进行排序（因为 Sequential Counter 为这种不平衡提供了最多的推理能力，保证稠密的变量出现在前面，稀疏的在后面），那么我们得到的基数约束为 
+#pause `Occur` 通过统计变量在子句中出现的次数（正负文字都统计），根据出现次数的递减顺序进行排序（因为 Sequential Counter 为这种不平衡提供了最多的推理能力，保证稠密的变量出现在前面，稀疏的在后面），那么我们得到的基数约束为
 $
   x_2 + x_1 + not x_4 +x_3 lt.eq 2
 $
@@ -282,33 +287,33 @@ $
 #pagebreak()
 
 #grid(columns: (1fr, .75fr))[
-#text(size: .7em)[
-#figure(
-  kind: "algorithm",
-  supplement: [Algorithm],
-  pseudocode-list(booktabs: true, numbered-title: [PAMO])[
+  #text(size: .7em)[
+    #figure(
+      kind: "algorithm",
+      supplement: [Algorithm],
+      pseudocode-list(booktabs: true, numbered-title: [PAMO])[
 
-    + *while* there exists $v in C$ have not been selected *do*
-      + $v arrow.l$ variable with highest score in $C$
-      + ording $arrow.l$ ording appending $v$
-      + *if* AMO activated
-        + *for* $c in$ AMO $and v in c$ *do*
-          + *for* $v_i in c and v_i eq.not v$ *do*
-            + $"score"(v_i) arrow.l "score"(v_i) + |c|^2$
-      + *for* $c in $ clauses and $v in c$ *do*
-        + *for* $v_i in c and v_i eq.not v$ *do*
-          + $"score"(v_i) arrow.l "score"(v_i) + beta = cases(4 ", if"|c| = 2, 1/(|c|) ", otherwise")$
-    + *end*
-    + *return* ording
-  ],
-  caption: "PAMO",
-)
-]
+        + *while* there exists $v in C$ have not been selected *do*
+          + $v arrow.l$ variable with highest score in $C$
+          + ording $arrow.l$ ording appending $v$
+          + *if* AMO activated
+            + *for* $c in$ AMO $and v in c$ *do*
+              + *for* $v_i in c and v_i eq.not v$ *do*
+                + $"score"(v_i) arrow.l "score"(v_i) + |c|^2$
+          + *for* $c in$ clauses and $v in c$ *do*
+            + *for* $v_i in c and v_i eq.not v$ *do*
+              + $"score"(v_i) arrow.l "score"(v_i) + beta = cases(4 ", if"|c| = 2, 1/(|c|) ", otherwise")$
+        + *end*
+        + *return* ording
+      ],
+      caption: "PAMO",
+    )
+  ]
 ][
-单独使用 `Proximity` 后，我们得到的基数约束为 
-$
-  x_2 + x_1 + x_3 + not x_4 lt.eq 2
-$
+  单独使用 `Proximity` 后，我们得到的基数约束为
+  $
+    x_2 + x_1 + x_3 + not x_4 lt.eq 2
+  $
 ]
 #pagebreak()
 

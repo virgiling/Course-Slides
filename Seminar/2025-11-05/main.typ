@@ -18,18 +18,6 @@
 // This is necessary. Don't forget this!
 #show: frame-style(styles.thmbox)
 
-#let colorize(svg, color) = {
-  let blk = black.to-hex()
-  // You might improve this prototypical detection.
-  if svg.contains(blk) {
-    // Just replace
-    svg.replace(blk, color.to-hex())
-  } else {
-    // Explicitly state color
-    svg.replace("<svg ", "<svg fill=\"" + color.to-hex() + "\" ")
-  }
-}
-
 #let pinit-highlight-equation-from(
   height: 2em,
   pos: bottom,
@@ -93,7 +81,12 @@
     author: [凌典],
     date: datetime.today(),
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white)),
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 

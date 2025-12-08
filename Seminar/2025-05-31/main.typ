@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.2.2"
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
-#import "@preview/curryst:0.3.0": rule, proof-tree
+#import "@preview/fletcher:0.5.1" as fletcher: edge, node
+#import "@preview/curryst:0.3.0": proof-tree, rule
 #import "@preview/touying:0.5.2": *
 #import "@preview/touying-buaa:0.2.0": *
 #import "@preview/i-figured:0.2.4"
@@ -19,10 +19,23 @@
   }
 }
 
-#let pinit-highlight-equation-from(height: 2em, pos: bottom, fill: rgb(0, 180, 255), highlight-pins, point-pin, body) = {
+#let pinit-highlight-equation-from(
+  height: 2em,
+  pos: bottom,
+  fill: rgb(0, 180, 255),
+  highlight-pins,
+  point-pin,
+  body,
+) = {
   pinit-highlight(..highlight-pins, dy: -0.9em, fill: rgb(..fill.components().slice(0, -1), 40))
   pinit-point-from(
-    fill: fill, pin-dx: -0.6em, pin-dy: if pos == bottom { 0.5em } else { -0.9em }, body-dx: 0pt, body-dy: if pos == bottom { -1.7em } else { -1.6em }, offset-dx: 0em, offset-dy: if pos == bottom { 0.8em + height } else { -0.6em - height },
+    fill: fill,
+    pin-dx: -0.6em,
+    pin-dy: if pos == bottom { 0.5em } else { -0.9em },
+    body-dx: 0pt,
+    body-dy: if pos == bottom { -1.7em } else { -1.6em },
+    offset-dx: 0em,
+    offset-dy: if pos == bottom { 0.8em + height } else { -0.6em - height },
     point-pin,
     rect(
       inset: 0.5em,
@@ -30,8 +43,8 @@
       {
         set text(fill: fill)
         body
-      }
-    )
+      },
+    ),
   )
 }
 
@@ -58,7 +71,12 @@
     author: [凌典],
     date: datetime.today(),
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white))
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 
@@ -86,12 +104,7 @@ SAT 的求解方法主要分为两类：
 #figure(
   table(
     columns: 4,
-    table.header(
-      [编码方法],
-      [变量],
-      [子句数],
-      [文字数],
-    ),
+    table.header([编码方法], [变量], [子句数], [文字数]),
 
     [Sequential Counter], [1080], [2154], [5358],
     [Tree-based], [328], [1402], [3854],
@@ -154,10 +167,10 @@ SAT 的求解方法主要分为两类：
     ]
   ],
   [
-    
+
     - 连续的目标函数比离散的超立方体更能度量优化的过程
     - 连续的优化过程在一次迭代时不止“翻转”一个变量
-  ]
+  ],
 )
 
 == Math Background
@@ -165,7 +178,7 @@ SAT 的求解方法主要分为两类：
 首先，我们引入一个定理：
 
 #tblock(title: "Walsh-Fourier Transform")[
-  对于一个布尔函数 $f: {-1, 1}^n arrow.r {-1, 1}$，这里 $-1 arrow.l.r top, 1 arrow.l.r bot$，一定存在一种方法将其表述为一个多线性多项式#footnote[一种多元多项式，其中每个变量都是线性的]，其至多含有 $2^n$ 项: $F(X) = sum_(S subset.eq [n]) hat(f)(S) times product_(i in S) x_i$，其中 $hat(f)(S) = 1/2^n  sum_(x in {-1, 1}^n) f(x) times product_(x_i in S) x_i$，称为 Walsh-Fourier 系数。
+  对于一个布尔函数 $f: {-1, 1}^n arrow.r {-1, 1}$，这里 $-1 arrow.l.r top, 1 arrow.l.r bot$，一定存在一种方法将其表述为一个多线性多项式#footnote[一种多元多项式，其中每个变量都是线性的]，其至多含有 $2^n$ 项: $F(X) = sum_(S subset.eq [n]) hat(f)(S) times product_(i in S) x_i$，其中 $hat(f)(S) = 1/2^n sum_(x in {-1, 1}^n) f(x) times product_(x_i in S) x_i$，称为 Walsh-Fourier 系数。
 ]
 
 #pagebreak()
@@ -178,7 +191,7 @@ $
     hat(f)({x_1});
     hat(f)({x_2});
     hat(f)({x_1, x_2});
-  ) = 
+  ) =
   mat(
     1/2;
     1/2;
@@ -190,7 +203,7 @@ $
     1, 1, -1, -1;
     1, -1, -1, 1;
   )#pin(2)
-  times 
+  times
   #pin(3)mat(
     1;
     1;
@@ -238,7 +251,7 @@ $
   )
 $
 
-于是，我们定义目标函数为 $F_phi (a) = EE_(x in S_a)[f_phi (x)] = sum_c PP_(x in S_a)[c(x) = top] =  sum_c "FE"_c (a)$
+于是，我们定义目标函数为 $F_phi (a) = EE_(x in S_a)[f_phi (x)] = sum_c PP_(x in S_a)[c(x) = top] = sum_c "FE"_c (a)$
 
 其中，$"FE"_c(a)$ 表示子句 $c$ 在 $a$ 取值下的 Fourier 展开。
 
@@ -261,19 +274,19 @@ $
 #text(size: 0.7em)[
   #set align(center)
   #pseudocode-list[
-  + *for* $j in [J]$ *do*
-    + $x_0 tilde cal(U)[-1, 1]^n$
-    + $t arrow.l 0$
-    + *while* not converged *do*
-      + $G(x_t) = 1/eta (x_t - product_([-1, 1]^n) x_t - eta dot.c nabla F(x_t))$
-      + *if* $||G(x_t)||_2 gt 0$ *then*
-        + $x_(t+1) arrow.l x_t - eta dot.c G(x_t)$
-      + *else*
-        + *if* $x_t$ is not feasible *then* 
-          + $x_(t+1) arrow.l $ moving towards a negative direction 
-        + *else* \# Meet a local optimal
-          + *break*
-]
+    + *for* $j in [J]$ *do*
+      + $x_0 tilde cal(U)[-1, 1]^n$
+      + $t arrow.l 0$
+      + *while* not converged *do*
+        + $G(x_t) = 1/eta (x_t - product_([-1, 1]^n) x_t - eta dot.c nabla F(x_t))$
+        + *if* $||G(x_t)||_2 gt 0$ *then*
+          + $x_(t+1) arrow.l x_t - eta dot.c G(x_t)$
+        + *else*
+          + *if* $x_t$ is not feasible *then*
+            + $x_(t+1) arrow.l$ moving towards a negative direction
+          + *else* \# Meet a local optimal
+            + *break*
+  ]
 ]
 
 == Experimental Results

@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.2.2"
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
-#import "@preview/curryst:0.3.0": rule, proof-tree
+#import "@preview/fletcher:0.5.1" as fletcher: edge, node
+#import "@preview/curryst:0.3.0": proof-tree, rule
 #import "@preview/touying:0.5.2": *
 #import "@preview/touying-buaa:0.2.0": *
 #import "@preview/i-figured:0.2.4"
@@ -87,7 +87,12 @@
     author: [凌典],
     date: datetime.today(),
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white)),
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 
@@ -202,8 +207,8 @@
 于是：
 
 $
-  ket(psi(t)) &= cal(T)exp((-i)/hbar integral_0^t H(t)dd(t))ket(psi(0)) \
-  &= U(t)ket(psi(0))
+  ket(psi(t)) & = cal(T)exp((-i)/hbar integral_0^t H(t)dd(t))ket(psi(0)) \
+              & = U(t)ket(psi(0))
 $
 
 #pagebreak()
@@ -216,7 +221,7 @@ $
 其作用在量子比特 $ket(psi) = alpha ket(0) + beta ket(1)$ 上的效果如下：
 
 $
-  X ket(psi) = mat(0, 1;1, 0) mat(alpha;beta) = mat(beta;alpha)
+  X ket(psi) = mat(0, 1; 1, 0) mat(alpha; beta) = mat(beta; alpha)
 $
 
 经典比特门中的非门效果一致：$X ket(0) = ket(1), X ket(1) = ket(0)$
@@ -235,7 +240,8 @@ $
 
 我们以一个例子来说明其运算规则：
 
-#mimath(`
+#mimath(
+  `
 \begin{bmatrix}
 1 & 2 & 3 \\
 4 & 5 & 6
@@ -252,12 +258,13 @@ b_{21} & b_{22} &\textbar& 2b_{21} & 2b_{22} &\textbar& 3b_{21} & 3b_{22} \\
 4b_{11} & 4b_{21} &\textbar& 5b_{11} & 5b_{12} &\textbar& 6b_{11} & 6b_{12} \\
 4b_{21} & 4b_{22} &\textbar& 5b_{21} & 5b_{22} &\textbar& 6b_{21} & 6b_{22} \\
 \end{bmatrix}
-  `)
+  `,
+)
 
 对于上文中的狄拉克符号（纯态单量子），我们将其表示为：
 
 $
-  ket(psi) times.circle ket(phi) = ket(psi phi) = mat(alpha_1 beta_1;alpha_1 beta_2;alpha_2 beta_1; alpha_2 beta_2)
+  ket(psi) times.circle ket(phi) = ket(psi phi) = mat(alpha_1 beta_1; alpha_1 beta_2; alpha_2 beta_1; alpha_2 beta_2)
 $
 
 = 量子计算原理
@@ -331,9 +338,11 @@ $
 
 其中 $U_i$ 是一个酉变化，根据上面提到的哈密顿量演化过程，我们可以将其写为如下形式：
 
-#mitex(`
+#mitex(
+  `
 \ket{\psi} = \prod^p_{j=1} \exp \Bigg(-i \bigg( (1 - s(j\Delta t))H_B + s(j\Delta t)H_P \bigg)\Delta t \Bigg)\ket{\psi_0}
-`)
+`,
+)
 
 #pagebreak()
 
@@ -342,43 +351,51 @@ $
   column-gutter: 4em,
   [
     #set text(.8em)
-    #mitex(`
+    #mitex(
+      `
     \ket{\psi} = \prod^p_{j=1} \exp \Bigg(-i \bigg( (1 - s(j\Delta t))H_B + s(j\Delta t)H_P \bigg)\Delta t \Bigg)\ket{\psi_0}
-    `)
+    `,
+    )
 
     进一步的，为了方便电路的实现，对每次的演化，我们规定如下：
 
-    #mitex(`
+    #mitex(
+      `
     \begin{aligned}
     s(t) = 1 &,  t \in [0, \gamma_1) \\
     s(t) = 0 &, t \in [\gamma_1, \gamma_1 + \beta_1)\\
     s(t) = 1 &, t \in [\gamma_1 + \beta_1, \gamma_1 + \beta_1 + \gamma_2)\\
     &\vdots
     \end{aligned}
-    `)
+    `,
+    )
   ],
   [
     #set text(.8em)
     于是，最终我们可以得到本征态的计算为：
-    #mitex(`
+    #mitex(
+      `
     \begin{aligned}
     \ket{\psi(\overrightarrow{\gamma}, \overrightarrow{\beta})} &= e^{-iH_B\beta_p}\times e^{-iH_P\gamma_p} \times \dots \times e^{-iH_B\beta_1} \times e^{-iH_P\gamma_1} \ket{+} \\
     &= \prod^p_{j=1} e^{-iH_B\beta_j} e^{-iH_P\gamma_j} \ket{+} \\
     &= \prod^p_{j=1}U_B^{(j)}U_C^{(j)} \ket{+}
     \end{aligned}
-    `)
+    `,
+    )
   ],
 )
 
 #pagebreak()
 
-#mitex(`
+#mitex(
+  `
 \begin{aligned}
 \ket{\psi(\overrightarrow{\gamma}, \overrightarrow{\beta})} &= e^{-iH_B\beta_p}\times e^{-iH_P\gamma_p} \times \dots \times e^{-iH_B\beta_1} \times e^{-iH_P\gamma_1} \ket{+} \\
 &= \prod^p_{j=1} e^{-iH_B\beta_j} e^{-iH_P\gamma_j} \ket{+} \\
 &= \prod^p_{j=1}U_B^{(j)}U_C^{(j)} \ket{+}
 \end{aligned}
-`)
+`,
+)
 
 我们令 $theta = (arrow(gamma), arrow(beta))$，即可得到：
 

@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.2.2"
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
-#import "@preview/curryst:0.3.0": rule, proof-tree
+#import "@preview/fletcher:0.5.1" as fletcher: edge, node
+#import "@preview/curryst:0.3.0": proof-tree, rule
 #import "@preview/touying-buaa:0.2.0": *
 #import "@preview/i-figured:0.2.4"
 #import "@preview/pinit:0.2.2": *
@@ -83,7 +83,12 @@
     author: [凌典],
     date: datetime.today(),
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white))
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 
@@ -117,7 +122,7 @@ $
 ]
 
 #only((1, 2))[
-    + Pseudocost Branching：根据历史分支效果（如界限提升）来选择变量，计算快，但早期分支决策如果初始化不好，会极大影响整体性能。
+  + Pseudocost Branching：根据历史分支效果（如界限提升）来选择变量，计算快，但早期分支决策如果初始化不好，会极大影响整体性能。
 ]
 
 #only(2)[
@@ -144,30 +149,34 @@ $cal(G) = (X, C, E)$，其中：
 + 边集合 $E = {(x, c)| x in X, c in C, "iff" c "contains" x}$。
 
 #figure(
-  image("fig/bigraph.png", width: 30%)
+  image("fig/bigraph.png", width: 30%),
 )<network>
 
 == 网络架构
 
 #figure(
-  image("fig/network.png", width: 80%)
+  image("fig/network.png", width: 80%),
 )
 
 
 #only(1)[
   本文使用 GCN 来综合变量与约束的特征值，帮助 RL 进行决策，GCN 选定的特征值如 @features 所示
   #subpar.grid(
-      figure(
-        image("fig/all_features.png", width: 90%),
-        caption: [所有特征值]
-      ), <all>,
-      figure(
-        image("fig/features.png"),
-        caption: [变量附加特征值]
-    ), <additional>,
+    figure(
+      image("fig/all_features.png", width: 90%),
+      caption: [所有特征值],
+    ),
+    <all>,
+
+    figure(
+      image("fig/features.png"),
+      caption: [变量附加特征值],
+    ),
+    <additional>,
+
     columns: (1fr, 1fr),
     caption: [变量与约束的特征值],
-    label: <features>
+    label: <features>,
   )
 ]
 
@@ -197,11 +206,11 @@ $cal(G) = (X, C, E)$，其中：
 
 - State: 以当前搜索树的*焦点节点*为中心，将其对应的 MILP 子问题化为二分图
 - Action: 在当前节点的所有可分支变量中，选择一个变量进行分支
-- Reward: 
+- Reward:
   - 每分支一次，奖励为 -1
   - 如果当前动作使得子树被 fathomed#footnote[
-    指在 B&B 树搜索过程中，已经不需要再继续扩展（分支）下去的节点。
-  ]，奖励为 0
+      指在 B&B 树搜索过程中，已经不需要再继续扩展（分支）下去的节点。
+    ]，奖励为 0
 
 
 #only(2)[
@@ -211,17 +220,17 @@ $cal(G) = (X, C, E)$，其中：
 = 轨迹重构
 
 #tblock(title: "轨迹重构")[
-    在训练时，不直接用原始长序列（即solver实际走过的节点序列），而是“回溯”地将搜索树分解为多个短的、每个都在同一子树内的轨迹。
+  在训练时，不直接用原始长序列（即solver实际走过的节点序列），而是“回溯”地将搜索树分解为多个短的、每个都在同一子树内的轨迹。
 ]
 
 #figure(
-  image("fig/train.png", width: 90%)
+  image("fig/train.png", width: 90%),
 )
 
 == 训练数据生成
 
 #figure(
-  image("fig/train.png", width: 70%)
+  image("fig/train.png", width: 70%),
 )
 
 + 使用任意节点选择策略（如SCIP默认）完整求解一个MILP实例，得到完整的BnB树。
@@ -265,6 +274,6 @@ Baseline 为：
 在 500 $times$ 1000 的集合覆盖问题下，其表现为：
 
 #figure(
-  image("fig/eval.png", width: 50%)
+  image("fig/eval.png", width: 50%),
 )
 

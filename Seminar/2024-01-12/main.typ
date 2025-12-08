@@ -1,12 +1,12 @@
 #import "@preview/cetz:0.2.2"
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
-#import "@preview/curryst:0.3.0": rule, proof-tree
+#import "@preview/fletcher:0.5.1" as fletcher: edge, node
+#import "@preview/curryst:0.3.0": proof-tree, rule
 #import "@preview/touying:0.5.2": *
 #import "@preview/touying-buaa:0.2.0": *
 #import "@preview/i-figured:0.2.4"
 #import "@preview/pinit:0.2.2": *
 #import "@preview/lovelace:0.3.0": *
-#import "@preview/algo:0.3.3": algo, i, d, comment, code
+#import "@preview/algo:0.3.3": algo, code, comment, d, i
 
 #let colorize(svg, color) = {
   let blk = black.to-hex()
@@ -80,7 +80,12 @@
     author: [凌典],
     date: "2024-01-12",
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white))
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 
@@ -91,10 +96,10 @@
   title: "Formulation",
 )[
   #only((1, 2))[给定一个全集 $E = {e_1, e_2, dots, e_m}$
-  
-  一个集合 $S = {s_1, s_2, dots, s_n}$，其中 $s_i subset.eq E and s_i != emptyset.rev$
 
-  一个集合 $G = {g_1, g_2, dots, g_q}$，其中 $q_i subset.eq S and q_i != emptyset.rev and q_i sect q_j = emptyset.rev$]
+    一个集合 $S = {s_1, s_2, dots, s_n}$，其中 $s_i subset.eq E and s_i != emptyset.rev$
+
+    一个集合 $G = {g_1, g_2, dots, g_q}$，其中 $q_i subset.eq S and q_i != emptyset.rev and q_i sect q_j = emptyset.rev$]
 
   #only((2, 3, 4))[
     $E$ 中的每个元素 $e_i$ 有其对应的利润 $a_i$
@@ -104,8 +109,8 @@
     $G$ 中的每个元素 $g_k$ 有对应的代价 $c_k$
 
     于是，问题描述为：找到 $S$ 的一个子集 $X^* subset.eq S, X^* != emptyset.rev$
-    
-    使得目标函数 $f = $ #pin(1) $sum_(s_i in X^* and e_j in s_i) a_j - sum_(s_i in X^*) b_i - sum_(g_k in G and s_i in X^* and s_i in g_k) c_k$ #pin(2) 最大
+
+    使得目标函数 $f =$ #pin(1) $sum_(s_i in X^* and e_j in s_i) a_j - sum_(s_i in X^*) b_i - sum_(g_k in G and s_i in X^* and s_i in g_k) c_k$ #pin(2) 最大
 
     #only((3, 4))[
       #pinit-highlight(1, 2)
@@ -117,7 +122,8 @@
           body-dy: 0pt,
           offset-dx: 300pt,
           offset-dy: 200pt,
-          1)[
+          1,
+        )[
           注意，这里的所有 \
           可能重复的覆盖都 \
           只计算一次
@@ -129,7 +135,7 @@
   #only(5)[
     我们考虑如下例子，$E = {e_1, dots, e_5}, S = {s_1, dots, s_5}, G = {g_1, g_2}$，考虑一个可行解为：$X^* = {s_4}$，则 $f = a_1 + a_4 + e_5 - b_4 - c_2 = 5 + 3 + 6 - 5 - 3 = 6$
     #figure(
-     image("fig/Instance-example.png", height:75%, fit: "contain"),
+      image("fig/Instance-example.png", height: 75%, fit: "contain"),
     )
 
   ]
@@ -137,29 +143,29 @@
 
 #slide(
   session: "Related Work",
-  title: "Related Work"
+  title: "Related Work",
 )[
 
-对比的三种 SOTA 算法如下：
+  对比的三种 SOTA 算法如下：
 
   + MILP(CPLEX)
   + ITS
   + Parallel ITS
 
-本文提出的算法为 LMSILS
+  本文提出的算法为 LMSILS
 
-#only(2)[
-  // TODO complete the parallel ITS algorithm
-  并行的 ITS 做法简单表述为
-]
+  #only(2)[
+    // TODO complete the parallel ITS algorithm
+    并行的 ITS 做法简单表述为
+  ]
 
 ]
 
 #slide(
   session: "LMSILS",
-  title: "LMSILS Framework"
+  title: "LMSILS Framework",
 )[
-  
+
   #only(1)[
     算法采用的为 学习驱动 + 多启动，考虑原本的多启动框架：
     #algo(
@@ -168,16 +174,16 @@
     )[
       $X^* arrow.l emptyset.rev$\
       while not terminated #i\
-        $X_0 arrow.l $ Initial_Solotion($I$)\
-        $X_0 arrow.l$ Local_Search($X_0$)\
+      $X_0 arrow.l$ Initial_Solotion($I$)\
+      $X_0 arrow.l$ Local_Search($X_0$)\
 
-        if $f(X_0) > f(X^*)$#i\
-          $X^* arrow.l X_0$#d#d\
-      
+      if $f(X_0) > f(X^*)$#i\
+      $X^* arrow.l X_0$#d#d\
+
       return $X^*$
     ]
-    +  _Initial_Solotion_ 替换为学习驱动的初始化算法
-    +  _Local_Search_ 替换为一个两阶段局部搜索算法
+    + _Initial_Solotion_ 替换为学习驱动的初始化算法
+    + _Local_Search_ 替换为一个两阶段局部搜索算法
   ]
 
   #only(2)[
@@ -186,16 +192,16 @@
       title: "LMSILS",
       parameters: ([Instance $I$],),
     )[
-      $I^prime arrow.l $Reduction($I$)\
+      $I^prime arrow.l$Reduction($I$)\
       $X^* arrow.l emptyset.rev$\
-      $(epsilon.alt, eta, beta, omega, gamma) arrow.l $Initial_Parameter() \
+      $(epsilon.alt, eta, beta, omega, gamma) arrow.l$Initial_Parameter() \
       while not terminated #i\
-        $X_0 arrow.l $ Learning_Driven_Initialization($I^prime, eta, epsilon.alt$)\
-        $(X_0, eta, gamma) arrow.l$ Intensification_Driven_Iterated_Local_Search($X_0, omega, beta, eta, gamma$)\
+      $X_0 arrow.l$ Learning_Driven_Initialization($I^prime, eta, epsilon.alt$)\
+      $(X_0, eta, gamma) arrow.l$ Intensification_Driven_Iterated_Local_Search($X_0, omega, beta, eta, gamma$)\
 
-        if $f(X_0) > f(X^*)$#i\
-          $X^* arrow.l X_0$#d#d\
-      
+      if $f(X_0) > f(X^*)$#i\
+      $X^* arrow.l X_0$#d#d\
+
       return $X^*$
     ]
   ]
@@ -203,10 +209,10 @@
 
 #slide(
   session: "LMSILS",
-  title: "Reduction"
+  title: "Reduction",
 )[
   考虑集合 $S$ 中的元素 $s_i$
-  
+
   如果对于 $forall e_j in s_i$，我们有 $sum_(e_j in s_i) a_j lt.eq b_i$，换而言之，选择 $s_i$ 不会带来任何的正收益（甚至在没有计算组的代价的情况下），那么显然我们在任何情况下都不可能选择 $s_i$ ，因此，我们可以将 $s_i$ 直接删除。
 
   #only(2)[
@@ -217,7 +223,7 @@
 
 #slide(
   session: "LMSILS",
-  title: "Learning Driven Initialization"
+  title: "Learning Driven Initialization",
 )[
   #only((1, 2))[
     文章中的学习，指代从历史解中学习出更可能在最优解中的那部分
@@ -239,18 +245,20 @@
       $X_0 arrow.l emptyset.rev$\
       $S^prime arrow.l S_0$\
       while $S^prime != emptyset.rev$ #i\
-        $"index"$ = -1 \
-        if #pin(3) rand(0, 1) < $epsilon.alt$#pin(4)#i \
-          index = $op("arg max", 
-          limits: #true)_limits(i in [|S^prime|]) eta_i$#d \
-        else #i\
-          index = rand(1, $|S^prime|$)#d\
-        
-        $S^prime arrow.l S^prime - {s_"index"}$\
+      $"index"$ = -1 \
+      if #pin(3) rand(0, 1) < $epsilon.alt$#pin(4)#i \
+      index = $op(
+        "arg max",
+        limits: #true
+      )_limits(i in [|S^prime|]) eta_i$#d \
+      else #i\
+      index = rand(1, $|S^prime|$)#d\
 
-        if #pin(5)$sum_(e_i in s_("index") and e_i in.not union.big_(s_l in X_0)s_l) a_i - b_("index") > 0$ && rand(0, 1) < $eta_("index")$ #pin(6) #i\
-          $X_0 arrow.l X_0 union {s_("index")}$#d#d\
-    ]  
+      $S^prime arrow.l S^prime - {s_"index"}$\
+
+      if #pin(5)$sum_(e_i in s_("index") and e_i in.not union.big_(s_l in X_0)s_l) a_i - b_("index") > 0$ && rand(0, 1) < $eta_("index")$ #pin(6) #i\
+      $X_0 arrow.l X_0 union {s_("index")}$#d#d\
+    ]
     #pinit-highlight(3, 4)
     #only(4)[
       #pinit-highlight(5, 6, fill: rgb(0, 0, 255, 20))
@@ -274,7 +282,7 @@
 
 #slide(
   session: "LMSILS",
-  title: "ILS"
+  title: "ILS",
 )[
 
   #only(1)[
@@ -284,26 +292,26 @@
   ]
 
   #only(2)[
-    
+
     #algo(
       title: "ILS",
       parameters: ([$X_0$, $omega$, $beta$ ,$eta$, $epsilon.alt$, $gamma$],),
       breakable: true,
       row-gutter: 4mm,
-      )[
-        $X arrow.l X_0$\
-        $X_"best" arrow.l X$\
-        non_improve $arrow.l 0$\
-        while non_improve < $omega$#i\
-          $X arrow.l $ TwoPhase_LocalSearch(X, $beta$)\
-          if $f(X) > f(X_"best")$#i\
-            Update $eta "and" gamma$\
-            $X_"best" arrow.l X$\
-            non_improve $arrow.l 0$#d\
-          else #i\
-            non_improve $arrow.l$ non_improve + 1#d\
-          $X arrow.l$ Perturbation($X_"best", gamma$)
-      ]
+    )[
+      $X arrow.l X_0$\
+      $X_"best" arrow.l X$\
+      non_improve $arrow.l 0$\
+      while non_improve < $omega$#i\
+      $X arrow.l$ TwoPhase_LocalSearch(X, $beta$)\
+      if $f(X) > f(X_"best")$#i\
+      Update $eta "and" gamma$\
+      $X_"best" arrow.l X$\
+      non_improve $arrow.l 0$#d\
+      else #i\
+      non_improve $arrow.l$ non_improve + 1#d\
+      $X arrow.l$ Perturbation($X_"best", gamma$)
+    ]
 
   ]
 
@@ -318,7 +326,7 @@
 
 #slide(
   session: "LMSILS",
-  title: "Two Phase Local Search"
+  title: "Two Phase Local Search",
 )[
   #only(1)[
     我们首先引入一个算子 _Flip_，$"Flip"(s_i)$ 表示为将集合 $S_0$ 中的 $s_i$ 的状态进行反转，也就是说：
@@ -329,7 +337,7 @@
   #only((1, 2))[
     我们将通过 _Flip_ 算子变化后的解集用 $X xor "Flip"(X, i)$ 来表示
   ]
-  
+
   #only((2, 3))[
     那么，一个可行解的邻域就可以显然的表示为：
     $cal(N)(X) = {X xor "Flip"(X, i), s_i in S_0}$
@@ -347,55 +355,54 @@
   #only(4)[
     #set text(size: .9em)
     #grid(
-     columns: (50%, 50%),
-     column-gutter: 5mm,
-     algo(
-      title: "TwoPhase_LocalSearch",
-      parameters: ([$X$, $beta$],),
-     )[
-      $X_b arrow.l X$\
-      non_improve $arrow.l 0$\
-      while non_improve = 0#i\
+      columns: (50%, 50%),
+      column-gutter: 5mm,
+      algo(
+        title: "TwoPhase_LocalSearch",
+        parameters: ([$X$, $beta$],),
+      )[
+        $X_b arrow.l X$\
+        non_improve $arrow.l 0$\
+        while non_improve = 0#i\
         non_improve $arrow.l 1$\
-        $X arrow.l $ Flip_Tabu_Search($X$, $beta$)\
-        $X arrow.l $ Swap_Search($X$)\
+        $X arrow.l$ Flip_Tabu_Search($X$, $beta$)\
+        $X arrow.l$ Swap_Search($X$)\
         if $f(X) > f(X_b)$#i\
-          $X_b arrow.l X$\
-          non_improve $arrow.l 0$#d#d\
-     ],
-     text(size: .8em)[
-      #grid(
-        rows: (70%, 30%),
-        algo(
-          title: "Flip_Tabu_Search",
-          parameters: ([$X$, $beta$],),
-          
-        )[
-          $X_b arrow.l X$\
-          non_improve $arrow.l 0$\
-          while non_improve $lt.eq beta$#i\
+        $X_b arrow.l X$\
+        non_improve $arrow.l 0$#d#d\
+      ],
+      text(size: .8em)[
+        #grid(
+          rows: (70%, 30%),
+          algo(
+            title: "Flip_Tabu_Search",
+            parameters: ([$X$, $beta$],),
+          )[
+            $X_b arrow.l X$\
+            non_improve $arrow.l 0$\
+            while non_improve $lt.eq beta$#i\
             $X^prime arrow.l cal(N)_1(X)$\
             $X arrow.l X^prime$\
             Update tabu list\
             if $f(X) > f(X_b)$#i\
-              $X_b arrow.l X$\
-              non_improve $arrow.l 0$#d\
+            $X_b arrow.l X$\
+            non_improve $arrow.l 0$#d\
             else#i\
-              non_improve $arrow.l$ non_improve + 1#d#d\
+            non_improve $arrow.l$ non_improve + 1#d#d\
 
-            
-        ],
-        algo(
-          title: "Swap_Search",
-          parameters: ([$X$],),
-        )[
-          non_improve $arrow.l 1$\
-          while non_improve = 0 #i\
+
+          ],
+          algo(
+            title: "Swap_Search",
+            parameters: ([$X$],),
+          )[
+            non_improve $arrow.l 1$\
+            while non_improve = 0 #i\
             $X^prime arrow.l cal(N)_2(X)$\
             if ...
-        ]
-     ) 
-     ]      
+          ],
+        )
+      ],
     )
   ]
 
@@ -408,14 +415,14 @@
 
 #slide(
   session: "LMSILS",
-  title: "Tabu Search"
+  title: "Tabu Search",
 )[
   #only(1)[
-  我们只在第一阶段存在禁忌搜索，而这里有两种禁忌搜索策略：
+    我们只在第一阶段存在禁忌搜索，而这里有两种禁忌搜索策略：
     + 搜索深度的禁忌
     + 禁忌列表的禁忌
 
-  对于深度的禁忌，十分容易理解，本质上就是多少次解没有更新，那么直接退出。
+    对于深度的禁忌，十分容易理解，本质上就是多少次解没有更新，那么直接退出。
   ]
 
   #only(2)[
@@ -423,7 +430,7 @@
 
     $T_i = cases(
       "Iter" + "rand"(0, 5) ", if" s_i "is added to " X,
-      "Iter" + |S_0| ", if" s_i "is removed from " X, 
+      "Iter" + |S_0| ", if" s_i "is removed from " X,
     )$
 
     这里，Iter 为当前的迭代数（也就是 `non_improve` 的值）
@@ -434,7 +441,7 @@
 
 #slide(
   session: "LMSILS",
-  title: "Fast Evaluation"
+  title: "Fast Evaluation",
 )[
   #only(1)[
     我们如何快速计算出 _Flip_ 算子为目标函数所带来的变化？
@@ -444,20 +451,20 @@
     $Delta f("Flip"(X, i)) = f(X xor "Flip"(X, i)) - f(X) = delta_i$
 
     其计算公式为：
-]
+  ]
 
-  #only((1, 2))[  
-    $delta_i  = cases(
-    sum_(e_j in s_i, |R_j sect X| = 0)a_j - b_i - theta_1 times c_k ", if" s_i in.not X,
-    -sum_(e_j in s_i, |R_j sect X| = 1)a_j + b_i + theta_2 times c_k ", if" s_i in X, 
+  #only((1, 2))[
+    $delta_i = cases(
+      sum_(e_j in s_i, |R_j sect X| = 0)a_j - b_i - theta_1 times c_k ", if" s_i in.not X,
+      -sum_(e_j in s_i, |R_j sect X| = 1)a_j + b_i + theta_2 times c_k ", if" s_i in X,
     )$
 
     而 $theta_1 = cases(
       1 ", if" g_k sect X = emptyset.rev,
       0 ", otherwise"
     )$, $theta_2 = cases(
-    1 ", if " g_k sect X = s_i,
-      0 ", otherwise" 
+      1 ", if " g_k sect X = s_i,
+      0 ", otherwise"
     )$, $e_j$ 表示 $s_i$ 中的元素，$R_j$ 表示含有 $e_j$ 的 $s_i$ 的并
   ]
 
@@ -465,9 +472,9 @@
     简而言之，当我们需要对 $s_i$ 进行一次翻转操作时，我们做如下操作：
     + $delta_i = -delta_i$
     + $forall s_j in g_k:(s_i in g_k)$，$delta_j = cases(
-      delta_j - c_k ", if " (X sect g_k = {s_i} and s_i in X) or (X sect g_k = {s_j} and s_i in.not X),
-      delta_j + c_k ", if " (X sect g_k = {s_i, s_j} and s_i in X) or (X sect g_k = emptyset.rev and s_i in.not X),
-    )$
+        delta_j - c_k ", if " (X sect g_k = {s_i} and s_i in X) or (X sect g_k = {s_j} and s_i in.not X),
+        delta_j + c_k ", if " (X sect g_k = {s_i, s_j} and s_i in X) or (X sect g_k = emptyset.rev and s_i in.not X),
+      )$
     + 对所有与 $s_i$ 中有相同元素 $e_j$ 的集合 $s_l$，
     $delta_l = cases(
       delta_l - a_j ", if " (X sect R_j = {s_i} and s_i in X) or (X sect R_j = {s_l} and s_i in.not X),
@@ -481,7 +488,7 @@
 
 #slide(
   session: "LMSILS",
-  title: "Update Learning Parameters"
+  title: "Update Learning Parameters",
 )[
   #only((1, 2))[
     #grid(
@@ -505,25 +512,25 @@
       ],
       text(size: .9em)[
         #algo(
-      title: "ILS",
-      parameters: ([$X_0$, $omega$, $beta$ ,$eta$, $epsilon.alt$, $gamma$],),
-      breakable: true,
-      row-gutter: 4mm,
-      )[
-        $X arrow.l X_0$\
-        $X_"best" arrow.l X$\
-        non_improve $arrow.l 0$\
-        while non_improve < $omega$#i\
-          $X arrow.l $ TwoPhase_LocalSearch(X, $beta$)\
+          title: "ILS",
+          parameters: ([$X_0$, $omega$, $beta$ ,$eta$, $epsilon.alt$, $gamma$],),
+          breakable: true,
+          row-gutter: 4mm,
+        )[
+          $X arrow.l X_0$\
+          $X_"best" arrow.l X$\
+          non_improve $arrow.l 0$\
+          while non_improve < $omega$#i\
+          $X arrow.l$ TwoPhase_LocalSearch(X, $beta$)\
           if $f(X) > f(X_"best")$#i\
-            Update $eta "and" gamma$\
-            $X_"best" arrow.l X$\
-            non_improve $arrow.l 0$#d\
+          Update $eta "and" gamma$\
+          $X_"best" arrow.l X$\
+          non_improve $arrow.l 0$#d\
           else #i\
-            non_improve $arrow.l$ non_improve + 1#d\
+          non_improve $arrow.l$ non_improve + 1#d\
           $X arrow.l$ Perturbation($X_"best", gamma$)
         ]
-      ]
+      ],
     )
   ]
   #only(3)[
@@ -531,12 +538,12 @@
 
     #set align(center)
     $eta_i = cases(
-     phi.alt_1 + (1 - phi.alt_1) times eta_i ", if" s_i in X and s_i in X_"best",
-     phi.alt_2 + (1 - phi.alt_2) times eta_i ", if" s_i in X and s_i in.not X_"best",
-     (1 - phi.alt_1) times eta_i ", if" s_i in.not X and s_i in.not X_"best",
-     (1 - phi.alt_2) times eta_i ", if" s_i in.not X and s_i in X_"best",
+      phi.alt_1 + (1 - phi.alt_1) times eta_i ", if" s_i in X and s_i in X_"best",
+      phi.alt_2 + (1 - phi.alt_2) times eta_i ", if" s_i in X and s_i in.not X_"best",
+      (1 - phi.alt_1) times eta_i ", if" s_i in.not X and s_i in.not X_"best",
+      (1 - phi.alt_2) times eta_i ", if" s_i in.not X and s_i in X_"best",
     )$
-    
+
     #set align(left)
     其中，$phi.alt_1 = 0.2, phi.alt_2 = 0.3$，并且，我们为此概率添加了平滑技术，用以避免历史信息的过度影响：
 
@@ -557,11 +564,11 @@
 
 #slide(
   session: "LMSILS",
-  title: "Perturbation"
+  title: "Perturbation",
 )[
   #only((1, 2, 4, 6))[文中提出了两种扰动类型：
-  + `Set_Perturbation`
-  + `Group_Perturbation`
+    + `Set_Perturbation`
+    + `Group_Perturbation`
   ]
 
   #only(2)[
@@ -574,7 +581,7 @@
   #only(3)[
     #figure(
       image("fig/set_perturbation.png", height: 80%, fit: "contain"),
-      caption: [$X_("best") = {s_2, s_3, s_5, s_6} arrow.r X = {s_2, s_3, s_6, s_9}$] 
+      caption: [$X_("best") = {s_2, s_3, s_5, s_6} arrow.r X = {s_2, s_3, s_6, s_9}$],
     )
   ]
 
@@ -592,7 +599,7 @@
   #only(5)[
     #figure(
       image("fig/group_perturbation.png", height: 80%, fit: "contain"),
-      caption: [$Z = {g_1, g_2} arrow.r "choose" g_1 arrow.r "choose" G-Z = {g_3}$] 
+      caption: [$Z = {g_1, g_2} arrow.r "choose" g_1 arrow.r "choose" G-Z = {g_3}$],
     )
   ]
 
@@ -603,9 +610,9 @@
       parameters: ([$X$, $gamma = {gamma_1, gamma_2}$],),
     )[
       if rand(0, 1) < $gamma_1$ #i\
-        $X arrow.l$ Set_Perturbation($X_"best"$)#d\
+      $X arrow.l$ Set_Perturbation($X_"best"$)#d\
       else #i\
-        $X arrow.l$ Group_Perturbation($X_"best"$)#d\
+      $X arrow.l$ Group_Perturbation($X_"best"$)#d\
     ]
     这里的 $sum_(t=1)^2 gamma_t = 1$，最开始时 $gamma_t = 1/2$
   ]
@@ -614,12 +621,12 @@
 
 #slide(
   session: "LMSILS",
-  title: "Update Perturbation Ratio"
+  title: "Update Perturbation Ratio",
 )[
   #only(1)[
 
     而对于扰动系数 $gamma in RR^2$，其更新规则如下：
-    
+
     #set align(center)
     $gamma_t = (d_0 + d_t) / (2 times d_0 + d_1 + d_2)$
 
@@ -633,15 +640,15 @@
 
 #slide(
   session: "LMSILS",
-  title: "Experimental Evaluation"
+  title: "Experimental Evaluation",
 )[
   #only(1)[
-  实例：
+    实例：
     + 10个小型实例（$A^*, B^*$）， $|E| = 1000, |S| in [3493, 82635], |G| in [100, 300]$
     + 10个中型实例（$C^*, D^*$），$|E| = 5192, |S| in {6633, 117274}, |G| in {31, 62}$
     + 10个大型实例（$E^*, F^*$），$|E| = 15625, |S| in [10325, 462666], |G| in {96, 100}$
 
-  对比算法为：
+    对比算法为：
     + MILP(CPLEX)
     + ITS
     + Parallel ITS
@@ -650,19 +657,19 @@
   #only(2)[
     #figure(
       image("fig/small-instance.png", height: 80%, fit: "contain"),
-      caption: [$A^*, B^*$ 小型实例] 
+      caption: [$A^*, B^*$ 小型实例],
     )
   ]
   #only(3)[
     #figure(
       image("fig/medium-instance.png", height: 80%, fit: "contain"),
-      caption: [$C^*, D^*$ 中型实例] 
+      caption: [$C^*, D^*$ 中型实例],
     )
   ]
   #only(4)[
     #figure(
       image("fig/big-instance.png", height: 80%, fit: "contain"),
-      caption: [$E^*, F^*$ 大型实例] 
+      caption: [$E^*, F^*$ 大型实例],
     )
   ]
 ]
