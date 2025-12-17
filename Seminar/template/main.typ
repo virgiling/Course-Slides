@@ -1,23 +1,13 @@
 #import "@preview/cetz:0.2.2"
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
-#import "@preview/curryst:0.3.0": rule, proof-tree
-#import "@preview/touying:0.5.2": *
+#import "@preview/curryst:0.3.0": proof-tree, rule
+#import "@preview/touying:0.6.1": *
 #import "@preview/touying-buaa:0.2.0": *
 #import "@preview/i-figured:0.2.4"
 #import "@preview/pinit:0.2.2": *
 #import "@preview/lovelace:0.3.0": *
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
+#import fletcher.shapes: ellipse, triangle
 
-#let colorize(svg, color) = {
-  let blk = black.to-hex()
-  // You might improve this prototypical detection.
-  if svg.contains(blk) {
-    // Just replace
-    svg.replace(blk, color.to-hex())
-  } else {
-    // Explicitly state color
-    svg.replace("<svg ", "<svg fill=\"" + color.to-hex() + "\" ")
-  }
-}
 
 #let pinit-highlight-equation-from(
   height: 2em,
@@ -74,18 +64,22 @@
 #show: buaa-theme.with(
   // Lang and font configuration
   lang: "zh",
-  font: ("Bookerly", "LXGW WenKai GB Screen"),
+  font: ("Bookerly", "LXGW WenKai"),
 
   // Basic information
   config-info(
-    title: [Conflict Directed Lazy Decomposition],
-    subtitle: [],
+    title: [Problem Partitioning via Proof Prefixes],
+    subtitle: [_Based on Cube&Conquer_],
     author: [凌典],
     date: datetime.today(),
     institution: [Northeast Normal University],
-    logo: image.decode(colorize(read("../template/fig/nenu-logo.svg"), white))
+    logo: image(bytes(
+      read("../template/fig/nenu-logo.svg").replace(
+        black.to-hex(),
+        white.to-hex(),
+      ),
+    )),
   ),
 )
 
 #title-slide()
-
