@@ -3,7 +3,7 @@
 
 #import "@preview/numbly:0.1.0": numbly
 #import "@preview/cuti:0.2.1": fakebold
-#import "@preview/fletcher:0.5.1" as fletcher: node, edge
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
 #import "@preview/i-figured:0.2.4"
 #import "@preview/lovelace:0.3.0": *
 #import "@preview/cetz:0.3.1"
@@ -33,7 +33,15 @@
 #let font-family = (
   // 宋体，属于「有衬线字体」，一般可以等同于英文中的 Serif Font
   // 这一行分别是「新罗马体（有衬线英文字体）」、「思源宋体（简体）」、「思源宋体」、「宋体（Windows）」、「宋体（MacOS）」
-  宋体: ("Times New Roman", "Source Han Serif SC", "Source Han Serif", "Noto Serif CJK SC", "SimSun", "Songti SC", "STSongti"),
+  宋体: (
+    "Times New Roman",
+    "Source Han Serif SC",
+    "Source Han Serif",
+    "Noto Serif CJK SC",
+    "SimSun",
+    "Songti SC",
+    "STSongti",
+  ),
   // 黑体，属于「无衬线字体」，一般可以等同于英文中的 Sans Serif Font
   // 这一行分别是「Arial（无衬线英文字体）」、「思源黑体（简体）」、「思源黑体」、「黑体（Windows）」、「黑体（MacOS）」
   黑体: ("Arial", "Source Han Sans SC", "Source Han Sans", "Noto Sans CJK SC", "SimHei", "Heiti SC", "STHeiti"),
@@ -43,7 +51,17 @@
   仿宋: ("Times New Roman", "FangSong", "FangSong SC", "STFangSong", "FZFangSong-Z02S"),
   // 等宽字体，用于代码块环境，一般可以等同于英文中的 Monospaced Font
   // 这一行分别是「Courier New（Windows 等宽英文字体）」、「思源等宽黑体（简体）」、「思源等宽黑体」、「黑体（Windows）」、「黑体（MacOS）」
-  等宽: ("Courier New", "Menlo", "IBM Plex Mono", "Source Han Sans HW SC", "Source Han Sans HW", "Noto Sans Mono CJK SC", "SimHei", "Heiti SC", "STHeiti"),
+  等宽: (
+    "Courier New",
+    "Menlo",
+    "IBM Plex Mono",
+    "Source Han Sans HW SC",
+    "Source Han Sans HW",
+    "Noto Sans Mono CJK SC",
+    "SimHei",
+    "Heiti SC",
+    "STHeiti",
+  ),
 )
 
 // 中文缩进
@@ -82,7 +100,6 @@
   title: (school: "东北师范大学", type: "研究生学位论文开题报告"),
   author_info: (:),
 ) = {
-
   set align(center)
   set text(size: font-size.二号, font: font-family.黑体)
   v(4em)
@@ -168,7 +185,6 @@
     ),
   )
   show heading: it => {
-
     let title = it.body.text.split("（").first()
     let content = it.body.text.split("（").last()
     if title == "参考文献" {
@@ -238,9 +254,7 @@
 // [!FIXME] 增加 dx, dy 偏移量参数，使得签名能够放在恰当的位置上
 #let sign(sign_image, date: datetime) = {
   place(right + bottom)[
-    指导教师签字：#h(1em) #box(
-      sign_image, height: 2em, baseline: 20%
-    ) \
+    指导教师签字：#h(1em) #box(sign_image, height: 2em, baseline: 20%) \
     #datetime-display-cn-declare(date)
     #h(3em)
   ]
@@ -277,15 +291,15 @@
       inset: 10pt,
       align: center,
       table.cell(colspan: 3)[审查小组意见],
-      table.cell(colspan: 3)[开题报告审查小组成员名单],[姓 名],[职 称],[工 作 单 位],
-      ..teacher_table_rows
+      table.cell(colspan: 3)[开题报告审查小组成员名单], [姓 名], [职 称], [工 作 单 位],
+      ..teacher_table_rows,
     )
     #set table(stroke: (x, y) => {
       (top: 0.5pt, bottom: 0.5pt, left: 0.5pt, right: 0.5pt)
     })
     #v(-1.2em)
     #table(
-      columns: (4fr)
+      columns: 4fr
     )[
       #v(1em)
       #set text(weight: "bold")
@@ -391,12 +405,7 @@ PB 约束提供了一个灵活的框架，用于表达布尔变量的线性组�
 #figure(
   table(
     columns: 4,
-    table.header(
-      [编码方法],
-      [变量],
-      [子句数],
-      [文字数],
-    ),
+    table.header([编码方法], [变量], [子句数], [文字数]),
 
     [Sequential Counter], [1080], [2154], [5358],
     [Tree-based], [328], [1402], [3854],
@@ -420,13 +429,9 @@ PB 约束提供了一个灵活的框架，用于表达布尔变量的线性组�
 
 下面，我们形式化的定义基数约束的 SAT 问题。
 
-/ SAT: 在变量集 $X = {x_1, x_2, dots, x_n}$ 上给定一个 CNF 公式， $
-  cal(F) = and.big_j^d (or.big_i^k_j l_i), l_i in {x_i, not x_i}, x_i in X
-$是否存在变量的一组赋值 $phi = (x_1^prime, x_2^prime, dots, x_n^prime)$ 使得 $cal(F) = 1$ 。
+/ SAT: 在变量集 $X = {x_1, x_2, dots, x_n}$ 上给定一个 CNF 公式， $ cal(F) = and.big_j^d (or.big_i^k_j l_i), l_i in {x_i, not x_i}, x_i in X $是否存在变量的一组赋值 $phi = (x_1^prime, x_2^prime, dots, x_n^prime)$ 使得 $cal(F) = 1$ 。
 
-/ 带基数约束的 SAT: 在 SAT 的约束上，新增一条：对于变量集合 $X$，我们有 $
- x_1 + x_2 + dots + x_n \# r, x_i in X
-$ 其中，$\# in {lt.eq, gt.eq, eq}$
+/ 带基数约束的 SAT: 在 SAT 的约束上，新增一条：对于变量集合 $X$，我们有 $ x_1 + x_2 + dots + x_n \# r, x_i in X $ 其中，$\# in {lt.eq, gt.eq, eq}$
 
 这里，新增的约束即为：对于变量集合而言，至多/至少/只有 $r$ 个变量取值为真
 
@@ -499,7 +504,11 @@ $<eight-queen>
 #figure(
   cetz.canvas({
     import cetz.draw: *
-    grid((-2, -2), (2, 2), step: 0.5)
+    grid(
+      (-2, -2),
+      (2, 2),
+      step: 0.5,
+    )
     rect((-1.5, 1.5), (-2, 2), fill: black)
     rect((-1, -1.5), (-1.5, -1), fill: black)
     rect((-1, 0), (-0.5, -0.5), fill: black)
@@ -566,12 +575,12 @@ $<eight-queen>
   pseudocode-list(booktabs: true, numbered-title: [Local Search])[
     + $cal(F), "card" arrow.l$ Pre-processing($cal(F)$)
     + *while* elapsed time < cutoff *do*
-      + $sigma^prime arrow.l $ a partial assignment with previous solutions
-      + $sigma arrow.l $ Unit Propagation($cal(F), sigma^prime$)
-      + *while* not_improved $lt $ N *do*
+      + $sigma^prime arrow.l$ a partial assignment with previous solutions
+      + $sigma arrow.l$ Unit Propagation($cal(F), sigma^prime$)
+      + *while* not_improved $lt$ N *do*
         + *if* $sigma "SAT" cal(F)$ *then*
           + *return* $sigma$
-        + $c_i arrow.l $ an unsat clause chosen with $max$ $w_i$
+        + $c_i arrow.l$ an unsat clause chosen with $max$ $w_i$
         + *if* $exists x in c_i "with" max "score"(x)$ *then*
           + $v arrow.l x$
         + *else*
@@ -609,9 +618,9 @@ $<eight-queen>
     + *while* true *do*
       + *if* all variables assigned *then*
         + *return* SAT
-      + $"conflict" arrow.l $ bcp($sigma, "card"$)
+      + $"conflict" arrow.l$ bcp($sigma, "card"$)
       + *if* $"conflict" eq.not emptyset.rev$ *then*
-        + $"level", "learnt clause" arrow.l $ analyze($"conflict"$)
+        + $"level", "learnt clause" arrow.l$ analyze($"conflict"$)
         + $"clauses" arrow.l "clauses" union "learnt clause"$ with clause aging
         + backtrack($"level"$)
       + *else*
@@ -635,7 +644,7 @@ $<eight-queen>
     + *while* true *do*
     + \/\/ bcp and resolve conflict
       + *if* $|sigma| gt.eq gamma$ *then*
-        + $sigma arrow.l $ Local Search($cal(F), sigma$) @fig:cardsat
+        + $sigma arrow.l$ Local Search($cal(F), sigma$) @fig:cardsat
       + *else*
         + $sigma arrow.l$ $sigma union$ decide($sigma$)
   ],
